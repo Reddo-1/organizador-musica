@@ -9,3 +9,13 @@
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Audio fixtures and databases are binary: never touch their bytes.
+*.mp3 binary
+*.m4a binary
+*.aiff binary
+*.aif binary
+*.wav binary
+*.flac binary
+*.ogg binary
+*.sqlite binary
