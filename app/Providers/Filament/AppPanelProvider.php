@@ -40,6 +40,8 @@ class AppPanelProvider extends PanelProvider
             ])
             ->defaultThemeMode(ThemeMode::Dark)
             ->sidebarWidth('15rem')
+            // The navigation is flat, so breadcrumbs would only repeat the page title.
+            ->breadcrumbs(false)
             ->viteTheme('resources/css/filament/app/theme.css')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
