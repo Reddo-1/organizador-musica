@@ -63,6 +63,7 @@ final class SongForm
                             ->label('Género')
                             ->options(fn (): array => Genre::query()->orderBy('name')->pluck('name', 'id')->all())
                             ->searchable()
+                            ->placeholder('Sin género')
                             ->createOptionForm([TextInput::make('name')->label('Nombre')->required()->maxLength(100)])
                             ->createOptionUsing(fn (array $data): int => app(TagManager::class)->createGenre($data['name'])->id)
                             ->createOptionModalHeading('Nuevo género'),

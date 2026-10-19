@@ -32,6 +32,9 @@
     --app-scroll-hint: rgb(0 0 0 / 0.16);
     --app-meter-off: #e2e2e2;
     --app-meter-hover: #b8b8b8;
+    --app-segmented-track: #f0f0f0;
+    --app-segmented-active: #ffffff;
+    --app-row-hover: #f5f5f5;
 }
 
 :root.dark {
@@ -51,6 +54,9 @@
     --app-scroll-hint: rgb(255 255 255 / 0.14);
     --app-meter-off: #2a2a2a;
     --app-meter-hover: #555555;
+    --app-segmented-track: #1a1a1a;
+    --app-segmented-active: #2a2a2a;
+    --app-row-hover: #1a1a1a;
 }
 
 /* One ground for the whole shell. */
@@ -653,4 +659,213 @@
     .app-stat + .app-stat {
         box-shadow: none;
     }
+}
+
+/* ---- Clasificar ----------------------------------------------------------------------- */
+
+.app-classify-head {
+    display: grid;
+    gap: 1rem;
+}
+
+/* Progress at its true ratio, both ends named (app-screens §6). */
+.app-progress-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.875rem;
+    color: var(--app-muted);
+
+    & strong {
+        font-size: 1.5rem;
+        font-weight: 500;
+        color: var(--app-text);
+    }
+}
+
+.app-progress-share {
+    font-size: 0.875rem;
+    color: var(--app-text);
+}
+
+.app-progress-track {
+    margin-top: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--app-meter-off);
+    overflow: hidden;
+}
+
+.app-progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--primary-500);
+    transition: width 240ms ease-out;
+}
+
+.app-classify-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.app-classify-search {
+    flex: 1 1 16rem;
+    max-width: 22rem;
+}
+
+/* A segmented track: the active segment is a raised pill, not the accent. */
+.app-segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.125rem;
+    border-radius: 9999px;
+    padding: 0.1875rem;
+    background-color: var(--app-segmented-track);
+}
+
+.app-segmented-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    padding: 0.3125rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--app-muted);
+    transition: background-color 120ms ease-out, color 120ms ease-out;
+
+    &:hover {
+        color: var(--app-text);
+    }
+
+    &.is-active {
+        background-color: var(--app-segmented-active);
+        color: var(--app-text);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary-500);
+        outline-offset: 1px;
+    }
+}
+
+.app-segmented-count {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--app-muted);
+}
+
+/* The queue: a list that drives the card; the selected row takes the active fill. */
+.app-queue {
+    padding: 1rem 0.75rem;
+}
+
+.app-queue-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 0 0.5rem 0.5rem;
+}
+
+.app-queue-list {
+    display: grid;
+    gap: 0.125rem;
+    max-height: calc(100dvh - 20rem);
+    min-height: 12rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.app-queue-item {
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    border-radius: 0.625rem;
+    padding: 0.375rem 0.5rem;
+    text-align: start;
+
+    &:hover {
+        background-color: var(--app-row-hover);
+    }
+
+    &.is-current {
+        background-color: var(--app-segmented-active);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--primary-500);
+        outline-offset: -2px;
+    }
+}
+
+.app-queue-index {
+    font-size: 0.75rem;
+    color: var(--app-muted);
+    text-align: end;
+}
+
+.app-queue-text {
+    display: grid;
+    min-width: 0;
+
+    & > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.app-queue-title {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--app-text);
+}
+
+.app-queue-artist {
+    font-size: 0.75rem;
+    color: var(--app-muted);
+}
+
+.app-queue-energy {
+    min-width: 1.25rem;
+    border-radius: 9999px;
+    padding: 0 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.25rem;
+    text-align: center;
+    background-color: color-mix(in oklab, var(--color-500) 18%, transparent);
+    color: var(--color-700);
+}
+
+.dark .app-queue-energy {
+    color: var(--color-300);
+}
+
+.app-keys {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.75rem;
+    color: var(--app-muted);
+}
+
+kbd {
+    display: inline-block;
+    min-width: 1.375rem;
+    border-radius: 0.3125rem;
+    padding: 0 0.3125rem;
+    box-shadow: inset 0 0 0 1px var(--app-rule-strong);
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1.25rem;
+    text-align: center;
+    color: var(--app-text);
 }
