@@ -8,6 +8,8 @@ La especificación completa está en SPEC.md.
 - `php artisan serve`: sirve la app en http://localhost:8000. Con Herd en Windows no hace falta.
 - `npm run build`: recompila el tema tras tocar CSS o vistas (`npm run dev` para recarga en caliente).
 - `php artisan test`: tests Pest. `vendor/bin/pint --dirty`: formato del PHP.
+- `php artisan music:scan`, `music:import-legacy {musica.db}`, `music:relocate-folder {antes} {ahora}`: escanear, importar la versión Python y cambiar la carpeta base de las rutas. Cómo llevar la app a otro PC: README.md.
+- Instancias de demostración para Playwright, con su propia BD, música y storage (nunca la del usuario, que suele usar el puerto 8000/8001): `.playwright-mcp/tools/serve-demo.sh` (8765) y `serve-worst.sh` (8766, 500 temas de `WorstCaseLibrarySeeder`). `node .playwright-mcp/tools/pw.mjs steps.json salida/` maneja el MCP de Playwright por pasos; cada ejecución es un navegador nuevo. `.playwright-mcp/` está en `.gitignore`: estas herramientas solo existen en el PC de desarrollo.
 
 ## Reglas (SPEC §7)
 
