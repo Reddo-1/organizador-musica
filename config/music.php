@@ -11,4 +11,7 @@ return [
     'ffmpeg' => env('FFMPEG_BINARY') ?: null, // ruta completa a ffmpeg.exe
     'tag_categories' => ['subgenre' => 'Subgénero', 'percussion' => 'Percusión'],
     'backups_to_keep' => 10,
+    // Inside WSL, stored Windows paths (C:\...) are read from /mnt/c/... Detected on its own;
+    // MUSIC_WSL=true/false forces it.
+    'wsl' => env('MUSIC_WSL'),
 ];
