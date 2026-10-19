@@ -26,6 +26,10 @@
     --app-nav-icon: #6b6b6b;
     --app-active: #eeeeee;
     --app-switch-active: #e8e8e8;
+    --app-rule-strong: #d1d5db;
+    --app-negative: #c4242a;
+    --app-warning: #92400e;
+    --app-scroll-hint: rgb(0 0 0 / 0.16);
 }
 
 :root.dark {
@@ -39,6 +43,10 @@
     --app-nav-icon: #949494;
     --app-active: transparent;
     --app-switch-active: #222222;
+    --app-rule-strong: #333333;
+    --app-negative: #e5484d;
+    --app-warning: #e5a93b;
+    --app-scroll-hint: rgb(255 255 255 / 0.14);
 }
 
 /* One ground for the whole shell. */
@@ -135,12 +143,227 @@
     font-variant-numeric: tabular-nums;
 }
 
-/* File paths: monospace, one line. */
+/* File paths: monospace on one line, truncated in the middle (App\Support\PathHtml). */
 .app-path {
+    display: inline-flex;
+    max-width: 100%;
+    min-width: 0;
+    vertical-align: bottom;
     font-family: var(--font-mono);
     font-size: 0.75rem;
+    line-height: 1.25rem;
     color: var(--app-muted);
     white-space: nowrap;
+}
+
+.app-path-head {
+    flex: 0 100 auto;
+    min-width: 2ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-path-stem {
+    flex: 0 1 auto;
+    min-width: 3ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-path-ext {
+    flex: none;
+}
+
+/* Inside table cells the width is the content's, so give paths a ceiling. */
+.app-path-cell {
+    max-width: min(26rem, 28vw);
+}
+
+/* A path standing alone in a modal or a list may use the whole width it is given. */
+.app-path-block {
+    display: flex;
+    max-width: 100%;
+}
+
+.app-mono-input {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+}
+
+.app-dash {
+    color: var(--app-muted);
+}
+
+/* A panel drawn by the app's own views: same surface as Filament's sections. */
+.app-panel {
+    border-radius: 1.25rem;
+    background-color: var(--app-surface);
+    box-shadow: 0 0 0 1px var(--app-border);
+    padding: 1.5rem;
+}
+
+.app-panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+}
+
+.app-panel-title {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    color: var(--app-text);
+}
+
+.app-panel-meta,
+.app-block-meta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+    align-items: baseline;
+    gap: 0.125rem 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--app-muted);
+}
+
+.app-nowrap {
+    white-space: nowrap;
+}
+
+.app-empty-line {
+    margin-top: 0.75rem;
+    border: 1px dashed var(--app-rule-strong);
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    color: var(--app-muted);
+}
+
+/* Figures as type in one strip split by hairlines, not tiles (app-screens §5). */
+.app-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    margin-top: 1rem;
+    border-block: 1px solid var(--app-rule);
+}
+
+.app-stat {
+    padding: 0.75rem 1rem 0.875rem;
+
+    & + & {
+        box-shadow: inset 1px 0 0 0 var(--app-rule);
+    }
+
+    &:first-child {
+        padding-inline-start: 0;
+    }
+
+    & dt {
+        font-size: 0.75rem;
+        line-height: 1rem;
+        color: var(--app-muted);
+    }
+
+    & dd {
+        margin-top: 0.25rem;
+        font-size: 1.5rem;
+        line-height: 2rem;
+        font-weight: 500;
+        color: var(--app-text);
+    }
+}
+
+.app-warning {
+    color: var(--app-warning) !important;
+}
+
+.app-negative {
+    color: var(--app-negative) !important;
+}
+
+.app-panel-block {
+    margin-top: 1.25rem;
+}
+
+.app-block-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--app-text);
+}
+
+.app-disclosure > summary {
+    cursor: pointer;
+    list-style: none;
+
+    &::before {
+        content: '▸';
+        display: inline-block;
+        width: 1ch;
+        color: var(--app-muted);
+        transition: transform 120ms ease-out;
+    }
+}
+
+.app-disclosure[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.app-list {
+    margin-top: 0.5rem;
+    display: grid;
+    gap: 0.25rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    /* Scroll hints: a soft edge shows there is more above or below, and disappears at the ends. */
+    background:
+        linear-gradient(var(--app-surface) 30%, transparent) top / 100% 1.5rem no-repeat local,
+        linear-gradient(transparent, var(--app-surface) 70%) bottom / 100% 1.5rem no-repeat local,
+        radial-gradient(farthest-side at 50% 0, var(--app-scroll-hint), transparent) top / 100% 0.625rem no-repeat scroll,
+        radial-gradient(farthest-side at 50% 100%, var(--app-scroll-hint), transparent) bottom / 100% 0.625rem no-repeat scroll;
+
+    & > li {
+        min-width: 0;
+    }
+}
+
+.app-move {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.5rem;
+}
+
+@media (max-width: 40rem) {
+    .app-move {
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 0 0.375rem;
+
+        & > .app-path:first-child {
+            grid-column: 1 / -1;
+        }
+    }
+}
+
+.app-move-arrow {
+    color: var(--app-muted);
+}
+
+.app-error-item {
+    display: grid;
+    gap: 0.125rem;
+}
+
+.app-error-message {
+    font-size: 0.75rem;
+    color: var(--app-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -150,4 +373,43 @@
         animation-duration: 0.01ms !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* Tables are rules and alignment: no header band, 12px grey sentence-case headers. */
+.fi-ta-table > thead > tr,
+.fi-ta-table > thead {
+    background-color: transparent !important;
+}
+
+.fi-ta-header-cell {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--app-muted);
+}
+
+.fi-ta-header-cell .fi-ta-header-cell-sort-btn,
+.fi-ta-header-cell button {
+    font-weight: 500;
+    color: inherit;
+}
+
+.app-table-empty {
+    padding: 0.5rem 1.5rem 1.5rem;
+}
+
+/* A page's second line is about the data, at body size. */
+.fi-header-subheading {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--app-muted);
+}
+
+/* Tabs follow the navigation: the active one brightens, the accent stays on data. */
+.fi-tabs-item.fi-active .fi-tabs-item-label,
+.fi-tabs-item.fi-active > .fi-icon {
+    color: var(--app-text);
+}
+
+.fi-tabs-item .fi-badge {
+    font-variant-numeric: tabular-nums;
 }

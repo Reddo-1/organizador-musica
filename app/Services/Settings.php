@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Data\ScanResult;
 use App\Models\Setting;
 use App\Support\LocalPath;
+use Carbon\CarbonImmutable;
 
 /**
  * The settings editable from Ajustes (SPEC §3). The table holds only what the user changed;
@@ -18,6 +20,9 @@ final class Settings
     public const DEFAULT_GENRE = 'default_genre';
 
     public const SUBFOLDER_AS_SUBGENRE = 'subfolder_as_subgenre';
+
+    /** The summary of the last scan, so Escanear still shows it after a reload. */
+    public const LAST_SCAN = 'last_scan';
 
     /** @var array<string, string|null>|null */
     private ?array $values = null;
@@ -67,6 +72,26 @@ final class Settings
     public function setSubfolderAsSubgenre(bool $enabled): void
     {
         $this->put(self::SUBFOLDER_AS_SUBGENRE, $enabled ? '1' : '0');
+    }
+
+    /** @return array{result: ScanResult, at: CarbonImmutable}|null */
+    public function lastScan(): ?array
+    {
+        $value = json_decode((string) $this->get(self::LAST_SCAN), true);
+
+        if (! is_array($value) || ! isset($value['result'], $value['at'])) {
+            return null;
+        }
+
+        return ['result' => ScanResult::fromArray($value['result']), 'at' => CarbonImmutable::parse($value['at'])];
+    }
+
+    public function setLastScan(ScanResult $result): void
+    {
+        $this->put(self::LAST_SCAN, json_encode(
+            ['result' => $result->toArray(), 'at' => now()->toIso8601String()],
+            JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
+        ));
     }
 
     /** "C:/Música/DNB/" and "/mnt/c/Música/DNB" are both kept as "C:\Música\DNB". */
