@@ -1,0 +1,153 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../app/Enums/**/*';
+@source '../../../../app/Support/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+/*
+ * "True-black flat" (taste-skill app style, seed 1999264896) fitted to SPEC §6.
+ *
+ * Dark is the default: the sidebar, the top bar and the page share one #000 ground, cards sit
+ * one lightness step up (#111, gray-900) and nested panels another (#2a2a2a, gray-800), with no
+ * rings or shadows at rest. Colour is for data (the energy scale, set roles, tag categories);
+ * violet, the primary colour, marks the main action of a screen and the focus ring, never the
+ * navigation. The grey steps themselves are set in AppPanelProvider.
+ */
+
+:root {
+    --app-ground: var(--gray-50);
+    --app-surface: #ffffff;
+    --app-border: #e8e8e8;
+    --app-rule: #ececec;
+    --app-text: #111111;
+    --app-muted: #5f6368;
+    --app-nav-label: #4b4d4f;
+    --app-nav-icon: #6b6b6b;
+    --app-active: #eeeeee;
+    --app-switch-active: #e8e8e8;
+}
+
+:root.dark {
+    --app-ground: #000000;
+    --app-surface: #111111;
+    --app-border: transparent;
+    --app-rule: #1a1a1a;
+    --app-text: #ffffff;
+    --app-muted: #b4b4b4;
+    --app-nav-label: #bbbbbb;
+    --app-nav-icon: #949494;
+    --app-active: transparent;
+    --app-switch-active: #222222;
+}
+
+/* One ground for the whole shell. */
+.fi-body {
+    background-color: var(--app-ground);
+}
+
+.fi-topbar {
+    background-color: var(--app-ground);
+    box-shadow: 0 1px 0 0 var(--app-rule);
+}
+
+@media (min-width: 64rem) {
+    .fi-sidebar {
+        box-shadow: 1px 0 0 0 var(--app-rule);
+    }
+}
+
+/* Surfaces: a 1px border on light, elevation by lightness alone on dark; never a shadow.
+   Soft radii, as the style deals them: 20px cards, pill buttons. */
+.fi-section:not(.fi-section-not-contained):not(.fi-aside),
+.fi-section.fi-aside > .fi-section-content-ctn,
+.fi-empty-state:not(.fi-empty-state-not-contained),
+.fi-ta-ctn {
+    box-shadow: 0 0 0 1px var(--app-border);
+    border-radius: 1.25rem;
+}
+
+.fi-btn {
+    border-radius: 9999px;
+}
+
+/* Navigation recedes: the active item is the label brightening, not a coloured pill. */
+.fi-sidebar-item-label {
+    color: var(--app-nav-label);
+    font-weight: 400;
+}
+
+.fi-sidebar-item-btn > .fi-icon {
+    color: var(--app-nav-icon);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background-color: var(--app-active);
+
+    & > .fi-sidebar-item-label,
+    & > .fi-icon {
+        color: var(--app-text);
+    }
+
+    & > .fi-sidebar-item-label {
+        font-weight: 500;
+    }
+}
+
+/* The theme switcher sits in the top bar; its active mode is ink, not the accent. */
+.fi-theme-switcher-btn.fi-active {
+    color: var(--app-text);
+    background-color: var(--app-switch-active);
+}
+
+/* App type is not display type: a 20px title at 600. */
+.fi-header-heading {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    font-weight: 600;
+    letter-spacing: 0;
+}
+
+/* Brand: the energy-scale mark and the product name. */
+.app-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    height: 100%;
+}
+
+.app-brand-mark {
+    width: 1.375rem;
+    height: 1.375rem;
+    flex: none;
+}
+
+.app-brand-name {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--app-text);
+    white-space: nowrap;
+}
+
+/* Figures line up digit for digit wherever numbers are compared. */
+.fi-ta-table,
+.app-num {
+    font-variant-numeric: tabular-nums;
+}
+
+/* File paths: monospace, one line. */
+.app-path {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--app-muted);
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -67,7 +67,7 @@ Después, en cada fase:
 
 ## 1. Qué es
 
-App web **local**, de **un solo usuario** y **sin login**, para un DJ de drum and bass (sobre todo neurofunk) con unos 150–300 temas en Windows. Sirve para catalogar los temas, filtrarlos con rangos y exportar playlists `.m3u8` para rekordbox.
+App web **local**, de **un solo usuario** y **sin login**, para un DJ de drum and bass (con gusto principal en neuro, deep y techstep) con unos 150–300 temas en Windows. Sirve para catalogar los temas, filtrarlos con rangos y exportar playlists `.m3u8` para rekordbox.
 
 Flujo de uso: **escanear carpeta → clasificar → filtrar y generar → exportar .m3u8 → importarlo en rekordbox** (este último paso es manual).
 

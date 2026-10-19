@@ -1,7 +1,3 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+// The Filament panel (app/Providers/Filament/AppPanelProvider.php) serves every page from the root.
