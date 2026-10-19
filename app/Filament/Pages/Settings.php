@@ -3,8 +3,11 @@
 namespace App\Filament\Pages;
 
 use App\Models\Genre;
+use App\Services\BackupManager;
+use App\Services\LibraryRelocator;
 use App\Services\Settings as AppSettings;
 use App\Support\LocalPath;
+use App\Support\Plural;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
@@ -15,6 +18,7 @@ use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -99,6 +103,63 @@ class Settings extends Page
                                 ->submit('save')
                                 ->keyBindings(['mod+s']),
                         ]),
+                    ]),
+                Section::make('Copias de seguridad')
+                    ->description('Una al día, en la primera visita del día. Se guardan las '.config('music.backups_to_keep').' últimas. Para llevar tu biblioteca a otro PC, copia la más reciente como database/database.sqlite.')
+                    ->aside()
+                    ->schema([
+                        View::make('filament.pages.settings.backups')
+                            ->viewData(fn (BackupManager $backups): array => [
+                                'available' => $backups->isAvailable(),
+                                'directory' => $backups->directory(),
+                                'backups' => array_slice($backups->backups(), 0, 5),
+                            ]),
+                        Actions::make([
+                            Action::make('backupNow')
+                                ->label('Copia ahora')
+                                ->color('gray')
+                                ->icon(Heroicon::OutlinedArchiveBoxArrowDown)
+                                ->visible(fn (BackupManager $backups): bool => $backups->isAvailable())
+                                ->action(function (BackupManager $backups): void {
+                                    $file = $backups->backupNow();
+
+                                    Notification::make()->title('Copia hecha')->body(basename($file))->success()->send();
+                                }),
+                        ])->key('backups-actions'),
+                    ]),
+                Section::make('Mover la biblioteca')
+                    ->description('Si la música está ahora en otra carpeta, otro disco u otro PC, cambia de una vez el principio de las rutas de todos los temas. Los archivos no se tocan.')
+                    ->aside()
+                    ->schema([
+                        Actions::make([
+                            Action::make('relocateLibrary')
+                                ->label('Cambiar la carpeta de los temas')
+                                ->color('gray')
+                                ->icon(Heroicon::OutlinedArrowsRightLeft)
+                                ->modalHeading('Cambiar la carpeta de los temas')
+                                ->modalDescription('Las rutas que empiecen por la carpeta de antes pasarán a empezar por la nueva. Después, escanea para comprobar que están todos.')
+                                ->modalSubmitActionLabel('Cambiar')
+                                ->schema([
+                                    TextInput::make('from')
+                                        ->label('Carpeta de antes')
+                                        ->placeholder('D:\Musica\DNB')
+                                        ->required()
+                                        ->extraInputAttributes(['class' => 'app-mono-input']),
+                                    TextInput::make('to')
+                                        ->label('Carpeta de ahora')
+                                        ->default(fn (AppSettings $settings): string => $settings->musicFolder())
+                                        ->required()
+                                        ->extraInputAttributes(['class' => 'app-mono-input']),
+                                ])
+                                ->action(function (array $data, LibraryRelocator $relocator): void {
+                                    $changed = $relocator->relocate($data['from'], $data['to']);
+
+                                    Notification::make()
+                                        ->title(Plural::of($changed, 'tema', 'temas').' con la ruta cambiada')
+                                        ->success()
+                                        ->send();
+                                }),
+                        ])->key('relocate-actions'),
                     ]),
             ]);
     }

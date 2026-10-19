@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\BackupDaily;
 use App\Support\Palette;
 use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -57,6 +58,8 @@ class AppPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                // The first page of the day copies the database (SPEC §5.10).
+                BackupDaily::class,
             ]);
     }
 }

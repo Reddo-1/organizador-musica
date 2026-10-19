@@ -44,6 +44,15 @@ return [
             'transaction_mode' => 'DEFERRED',
         ],
 
+        // The database of the Python version, opened read-only by music:import-legacy (SPEC §5.11).
+        'legacy' => [
+            'driver' => 'sqlite',
+            'database' => env('LEGACY_DATABASE', ''),
+            'prefix' => '',
+            'foreign_key_constraints' => false,
+            'options' => [PDO::SQLITE_ATTR_OPEN_FLAGS => PDO::SQLITE_OPEN_READONLY],
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DB_URL'),

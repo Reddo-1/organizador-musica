@@ -1138,3 +1138,52 @@ kbd {
 .fi-fo-slider .noUi-connect {
     background-color: var(--app-slider-fill);
 }
+
+/* ---- Ajustes: copias ------------------------------------------------------------------ */
+
+.app-backups {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.app-backups-folder {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--app-text);
+}
+
+.app-backups-list {
+    display: grid;
+
+    & li {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 1rem;
+        padding: 0.375rem 0;
+        border-bottom: 1px solid var(--app-rule);
+        font-size: 0.8125rem;
+        color: var(--app-muted);
+    }
+
+    & .app-key {
+        color: var(--app-text);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* On a phone the file name gets its own line: the date in it is what tells copies apart. */
+    @media (width < 40rem) {
+        & li {
+            grid-template-columns: 7.5rem auto;
+            justify-content: start;
+            row-gap: 0.125rem;
+        }
+
+        & .app-key {
+            grid-column: 1 / -1;
+        }
+    }
+}
