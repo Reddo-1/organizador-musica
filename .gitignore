@@ -31,3 +31,6 @@ Thumbs.db
 /.playwright-mcp
 /.taste-skill/*
 !/.taste-skill/direction.json
+
+# Third-party skills: not ours to publish. Reinstall them with the commands in SPEC §2 (skills-lock.json pins them).
+/.claude/skills/
