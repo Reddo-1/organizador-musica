@@ -41,6 +41,7 @@ Las capturas de cada fase están en `.playwright-mcp/capturas/{fase-0,fase-2,…
 - **Inicio.** «Generar playlist» se sirve en `/`.
 - **Elegir carpeta.** Un navegador no da la ruta absoluta de una carpeta (`webkitdirectory` solo da rutas relativas), así que el botón de carpeta de los campos de Escanear y Ajustes abre un explorador propio: `FolderBrowser` (servicio) + `App\Livewire\FolderPicker` + el trait `App\Filament\Concerns\PicksFolders`. Lista unidades y carpetas del PC donde corre la app (en WSL, `/mnt/x` se ve como `X:\`), solo nombres de carpetas.
 - **Pedido por el usuario el 2026-10-20:** contenido a todo el ancho (`maxContentWidth(Width::Full)`), ▶ en cada fila de Biblioteca con un reproductor fijo abajo (`filament.songs.dock`), formato del archivo (MP3/AIFF…) junto al título en Biblioteca y en la setlist, «Generar» encima de los filtros con su atajo Ctrl+Enter a la vista, «Clasificar los nuevos» tras un escaneo y el número de temas de cada etiqueta enlazado a la Biblioteca filtrada.
+- **README** (2026-10-20): pensado para cualquiera que llegue al repo, lo más sencillo posible. Las capturas de `docs/screenshots/` salen de la demo con los artistas cambiados por nombres inventados, para no atribuir temas falsos a artistas reales.
 - **Descartado por el usuario (2026-10-20):** Espacio para reproducir y autoplay en Clasificar, y atajos de teclado para el rol.
 - **Diseño.** Estilo «true-black flat» (`.taste-skill/direction.json`): fondo #000, tarjetas #111 y paneles anidados #2a2a2a. El violeta queda para las acciones principales. Los colores de energía, roles y categorías están en `app/Support/Palette.php`.
 
@@ -87,6 +88,5 @@ Configuración en `~/.claude.json`, en el proyecto: `"/mnt/c/Program Files/nodej
 
 1. **En el PC con la música:** instalar Herd, clonar https://github.com/Reddo-1/organizador-musica, `composer setup`, poner `FFMPEG_BINARY` en `.env` con la ruta a su `ffmpeg.exe`, `php artisan music:import-legacy "C:\…\musica.db"`, Escanear y elegir en Ajustes la carpeta de playlists. Luego comprobar que rekordbox importa un `.m3u8`.
 2. **Skills en el otro PC:** `.claude/skills/` no está en el repo (son de terceros, sin su licencia). Reinstálalas con los dos comandos de SPEC §2; `skills-lock.json` fija sus versiones.
-3. **README para el repo público:** el usuario quiere rehacerlo ahora que la app está a punto (qué hace, capturas de la demo y después la instalación).
-4. **GitHub:** repo público https://github.com/Reddo-1/organizador-musica (`gh` en `~/.local/bin`, con sesión de Reddo-1). Se sube solo `main`. La rama local `backup/antes-de-reescribir` guarda el historial de antes de quitar las líneas `Co-Authored-By` y las skills: no la subas nunca.
-5. **Ideas futuras de la spec**, sin empezar: importar BPM, key y cues del XML de colección de rekordbox.
+3. **GitHub:** repo público https://github.com/Reddo-1/organizador-musica (`gh` en `~/.local/bin`, con sesión de Reddo-1). Se sube solo `main`. La rama local `backup/antes-de-reescribir` guarda el historial de antes de quitar las líneas `Co-Authored-By` y las skills: no la subas nunca.
+4. **Ideas futuras de la spec**, sin empezar: importar BPM, key y cues del XML de colección de rekordbox.
