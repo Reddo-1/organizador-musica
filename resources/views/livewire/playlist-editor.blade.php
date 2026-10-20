@@ -73,7 +73,7 @@
                     </span>
                     <span class="app-setlist-position app-num">{{ $index + 1 }}</span>
                     <span class="app-setlist-text">
-                        <span class="app-setlist-title">{{ $song->title }}</span>
+                        <span class="app-setlist-title">{{ $song->title }} <span class="app-format">{{ strtoupper($song->extension()) }}</span></span>
                         <span class="app-setlist-artist">{{ $song->artist ?? '—' }}</span>
                     </span>
                     <span class="app-setlist-meta">

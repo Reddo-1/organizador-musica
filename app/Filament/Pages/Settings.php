@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Concerns\PicksFolders;
 use App\Models\Genre;
 use App\Services\BackupManager;
 use App\Services\LibraryRelocator;
@@ -28,6 +29,8 @@ use Filament\Support\Icons\Heroicon;
  */
 class Settings extends Page
 {
+    use PicksFolders;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     protected static ?string $navigationLabel = 'Ajustes';
@@ -64,7 +67,8 @@ class Settings extends Page
                             ->required()
                             ->maxLength(1000)
                             ->extraInputAttributes(['class' => 'app-mono-input', 'spellcheck' => 'false'])
-                            ->helperText('Con el formato de Windows, por ejemplo C:\Users\Ricardo\Music\DNB. Los archivos solo se leen.'),
+                            ->suffixAction(self::pickFolderAction('data.music_folder'))
+                            ->helperText('Escríbela con el formato de Windows (C:\Users\Ricardo\Music\DNB) o elígela con el botón de la carpeta. Los archivos solo se leen.'),
                         TextInput::make('default_genre')
                             ->label('Género por defecto')
                             ->maxLength(100)
@@ -83,6 +87,7 @@ class Settings extends Page
                             ->maxLength(1000)
                             ->extraInputAttributes(['class' => 'app-mono-input', 'spellcheck' => 'false'])
                             ->placeholder(config('music.playlists_folder'))
+                            ->suffixAction(self::pickFolderAction('data.playlists_folder'))
                             ->helperText('Vacía, se usa la carpeta storage\app\playlists de la app. Se crea si no existe.'),
                     ]),
             ])
@@ -190,5 +195,11 @@ class Settings extends Page
                 ->persistent()
                 ->send();
         }
+    }
+
+    /** @return list<string> */
+    protected function pickableFolders(): array
+    {
+        return ['data.music_folder', 'data.playlists_folder'];
     }
 }

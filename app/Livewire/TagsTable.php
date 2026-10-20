@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Filament\Resources\Songs\SongResource;
 use App\Models\Genre;
 use App\Models\Tag;
 use App\Services\TagManager;
@@ -39,6 +40,14 @@ class TagsTable extends Component implements HasActions, HasSchemas, HasTable
     #[Locked]
     public string $category;
 
+    /** Biblioteca with its filter for this tag (or genre) already on. */
+    public function libraryUrl(Tag|Genre $record): string
+    {
+        $filter = $this->isGenres() ? 'genre_id' : "tags_{$this->category}";
+
+        return SongResource::getUrl('index', ['filters' => [$filter => ['values' => [$record->id]]]]);
+    }
+
     public function table(Table $table): Table
     {
         return $table
@@ -54,7 +63,11 @@ class TagsTable extends Component implements HasActions, HasSchemas, HasTable
                     ->label('Temas')
                     ->numeric(locale: 'es')
                     ->sortable()
-                    ->alignEnd(),
+                    ->alignEnd()
+                    // The count opens Biblioteca filtered by this tag or genre.
+                    ->url(fn (Tag|Genre $record): ?string => $record->songs_count > 0 ? $this->libraryUrl($record) : null)
+                    ->color(fn (Tag|Genre $record): ?string => $record->songs_count > 0 ? 'primary' : null)
+                    ->tooltip(fn (Tag|Genre $record): ?string => $record->songs_count > 0 ? 'Ver estos temas en la Biblioteca' : null),
             ])
             ->defaultSort('name')
             ->headerActions([

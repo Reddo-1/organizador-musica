@@ -88,6 +88,38 @@ class GeneratePlaylist extends Page
             ->components([
                 View::make('filament.pages.generate.counter')
                     ->viewData(fn (): array => $this->counter()),
+                // The main action sits right under the count, above the long list of filters.
+                Section::make('Generar')
+                    ->compact()
+                    ->schema([
+                        Grid::make(['default' => 1, 'sm' => 2])->schema([
+                            TextInput::make('count')
+                                ->label('Nº de temas')
+                                ->helperText('0 = todos los que cumplen los filtros.')
+                                ->integer()
+                                ->minValue(0)
+                                ->maxValue(1000)
+                                ->required(),
+                            Select::make('order')
+                                ->label('Orden')
+                                ->options(PlaylistGenerator::ORDERS)
+                                ->selectablePlaceholder(false)
+                                ->required(),
+                        ]),
+                        Actions::make([
+                            Action::make('generate')
+                                ->label('Generar')
+                                ->icon(Heroicon::OutlinedSparkles)
+                                ->submit('generate')
+                                ->keyBindings(['mod+enter']),
+                            Action::make('newPlaylist')
+                                ->label('Nueva playlist')
+                                ->color('gray')
+                                ->visible(fn (): bool => $this->draft() !== null && ! $this->draftKept)
+                                ->action('startNewPlaylist'),
+                        ]),
+                        View::make('filament.pages.generate.keys'),
+                    ]),
                 Section::make('Filtros')
                     ->compact()
                     ->schema([
@@ -115,24 +147,6 @@ class GeneratePlaylist extends Page
                             ->label('Incluir temas cuyo archivo falta')
                             ->live(),
                     ]),
-                Section::make('Generar')
-                    ->compact()
-                    ->schema([
-                        Grid::make(['default' => 1, 'sm' => 2])->schema([
-                            TextInput::make('count')
-                                ->label('Nº de temas')
-                                ->helperText('0 = todos los que cumplen los filtros.')
-                                ->integer()
-                                ->minValue(0)
-                                ->maxValue(1000)
-                                ->required(),
-                            Select::make('order')
-                                ->label('Orden')
-                                ->options(PlaylistGenerator::ORDERS)
-                                ->selectablePlaceholder(false)
-                                ->required(),
-                        ]),
-                    ]),
             ])
             ->statePath('data');
     }
@@ -148,21 +162,7 @@ class GeneratePlaylist extends Page
                         ->viewData(fn (FilterPresets $presets): array => ['options' => $presets->options()]),
                     Form::make([EmbeddedSchema::make('form')])
                         ->id('generate-form')
-                        ->livewireSubmitHandler('generate')
-                        ->footer([
-                            Actions::make([
-                                Action::make('generate')
-                                    ->label('Generar')
-                                    ->icon(Heroicon::OutlinedSparkles)
-                                    ->submit('generate')
-                                    ->keyBindings(['mod+enter']),
-                                Action::make('newPlaylist')
-                                    ->label('Nueva playlist')
-                                    ->color('gray')
-                                    ->visible(fn (): bool => $this->draft() !== null && ! $this->draftKept)
-                                    ->action('startNewPlaylist'),
-                            ]),
-                        ]),
+                        ->livewireSubmitHandler('generate'),
                 ])->columnSpan(['default' => 1, 'xl' => 5]),
                 Group::make([
                     $draft

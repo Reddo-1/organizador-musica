@@ -36,6 +36,20 @@ it('scans from the page and keeps the summary', function () {
     $this->get('/escanear')->assertSee('Último escaneo')->assertSee('2 temas nuevos');
 });
 
+it('offers to classify the new songs, starting with the first of them', function () {
+    Livewire::test(Scan::class)->fillForm(['music_folder' => $this->folder])->call('scan');
+
+    $first = Song::query()->where('artist', 'Kanine')->sole();
+
+    expect(Scan::classifyNewUrl(app(Settings::class)->lastScan()['result']->new))->toEndWith('/clasificar?tema='.$first->id);
+    $this->get('/escanear')->assertSee('Clasificar los nuevos');
+
+    Song::query()->update(['energy' => 3]);
+
+    expect(Scan::classifyNewUrl(app(Settings::class)->lastScan()['result']->new))->toBeNull();
+    $this->get('/escanear')->assertDontSee('Clasificar los nuevos');
+});
+
 it('saves the scan options it was given', function () {
     Livewire::test(Scan::class)
         ->fillForm(['music_folder' => $this->folder, 'default_genre' => '', 'subfolder_as_subgenre' => false])

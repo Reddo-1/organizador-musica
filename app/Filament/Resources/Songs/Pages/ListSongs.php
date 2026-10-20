@@ -24,6 +24,7 @@ class ListSongs extends ListRecords
             View::make('filament.songs.metrics')
                 ->viewData(fn (LibraryStats $stats): array => ['stats' => $stats->summary()]),
             EmbeddedTable::make(),
+            View::make('filament.songs.dock'),
         ]);
     }
 

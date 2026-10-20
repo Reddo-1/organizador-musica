@@ -1,5 +1,6 @@
 @php
     /** @var array{result: \App\Data\ScanResult, at: \Carbon\CarbonImmutable}|null $lastScan */
+    use App\Filament\Pages\Scan;
     use App\Support\PathHtml;
 
     $result = $lastScan['result'] ?? null;
@@ -73,6 +74,11 @@
         @endif
 
         @if ($result->new !== [])
+            @if ($classifyUrl = Scan::classifyNewUrl($result->new))
+                <div class="app-panel-block">
+                    <x-filament::button tag="a" :href="$classifyUrl" icon="heroicon-o-bolt">Clasificar los nuevos</x-filament::button>
+                </div>
+            @endif
             <details class="app-panel-block app-disclosure">
                 <summary class="app-block-title">{{ count($result->new) }} {{ count($result->new) === 1 ? 'tema nuevo' : 'temas nuevos' }}</summary>
                 <ul class="app-list">

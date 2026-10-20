@@ -10,6 +10,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Contracts\View\View;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -41,6 +42,8 @@ class AppPanelProvider extends PanelProvider
             ])
             ->defaultThemeMode(ThemeMode::Dark)
             ->sidebarWidth('15rem')
+            // Tables and the setlist use every pixel of a wide screen: no 7xl cap on the content.
+            ->maxContentWidth(Width::Full)
             // The navigation is flat, so breadcrumbs would only repeat the page title.
             ->breadcrumbs(false)
             ->viteTheme('resources/css/filament/app/theme.css')

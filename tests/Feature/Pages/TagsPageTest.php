@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Resources\Songs\Pages\ListSongs;
 use App\Livewire\TagsTable;
 use App\Models\Genre;
 use App\Models\Song;
@@ -78,4 +79,29 @@ it('requires a name', function () {
     Livewire::test(TagsTable::class, ['category' => 'subgenre'])
         ->callAction(TestAction::make('create')->table(), data: ['name' => ''])
         ->assertHasActionErrors(['name' => 'required']);
+});
+
+it('links the number of songs to Biblioteca filtered by the tag or the genre', function () {
+    $tag = Tag::findOrCreateNamed('subgenre', 'Halftime');
+    [$tagged, $other] = Song::factory()->count(2)->create();
+    $tagged->tags()->attach($tag);
+
+    $table = Livewire::test(TagsTable::class, ['category' => 'subgenre']);
+    $url = $table->instance()->libraryUrl($tag);
+
+    expect(urldecode($url))->toEndWith("/biblioteca?filters[tags_subgenre][values][0]={$tag->id}");
+    $table->assertSeeHtml(e($url));
+
+    Livewire::withQueryParams(['filters' => ['tags_subgenre' => ['values' => [$tag->id]]]])
+        ->test(ListSongs::class)
+        ->assertCanSeeTableRecords([$tagged])
+        ->assertCanNotSeeTableRecords([$other]);
+
+    $genre = Genre::query()->create(['name' => 'Drum and Bass']);
+    $tagged->update(['genre_id' => $genre->id]);
+
+    Livewire::withQueryParams(['filters' => ['genre_id' => ['values' => [$genre->id]]]])
+        ->test(ListSongs::class)
+        ->assertCanSeeTableRecords([$tagged])
+        ->assertCanNotSeeTableRecords([$other]);
 });

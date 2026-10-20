@@ -44,28 +44,34 @@ final class SongsTable
         return $table
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with(['genre', 'tags']))
             ->columns([
+                ViewColumn::make('listen')
+                    ->label('')
+                    ->view('filament.tables.columns.listen')
+                    ->width('2.5rem')
+                    ->disabledClick(),
                 TextColumn::make('artist')
                     ->label('Artista')
                     ->searchable()
                     ->sortable()
                     ->placeholder('—')
-                    ->width('11rem')
+                    ->width('10rem')
                     ->wrap()
                     ->lineClamp(2),
                 TextColumn::make('title')
                     ->label('Título')
+                    // The format tells apart the MP3 and the AIFF of the same song.
+                    ->formatStateUsing(fn (Song $record): HtmlString => new HtmlString(e($record->title).' <span class="app-format">'.e(strtoupper($record->extension())).'</span>'))
                     ->searchable()
                     ->sortable()
-                    ->width('15rem')
+                    ->width('14rem')
                     ->wrap()
                     ->lineClamp(2),
                 TextColumn::make('genre.name')
                     ->label('Género')
                     ->sortable()
                     ->placeholder('—')
+                    // A genre is a few words: on one line it keeps the rows short.
                     ->width('9rem')
-                    ->wrap()
-                    ->lineClamp(2)
                     ->visibleFrom('md')
                     ->toggleable(),
                 ViewColumn::make('tags')

@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Exceptions\MusicFolderNotFound;
+use App\Filament\Concerns\PicksFolders;
 use App\Models\Genre;
 use App\Models\Song;
 use App\Services\LibraryScanner;
@@ -39,6 +40,7 @@ use Illuminate\Support\HtmlString;
 class Scan extends Page implements HasTable
 {
     use InteractsWithTable;
+    use PicksFolders;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFolderOpen;
 
@@ -74,7 +76,8 @@ class Scan extends Page implements HasTable
                     ->required()
                     ->maxLength(1000)
                     ->extraInputAttributes(['class' => 'app-mono-input', 'spellcheck' => 'false'])
-                    ->helperText('Con el formato de Windows, por ejemplo C:\Users\Ricardo\Music\DNB.'),
+                    ->suffixAction(self::pickFolderAction('data.music_folder'))
+                    ->helperText('Escríbela con el formato de Windows (C:\Users\Ricardo\Music\DNB) o elígela con el botón de la carpeta.'),
                 TextInput::make('default_genre')
                     ->label('Género por defecto')
                     ->maxLength(100)
@@ -151,11 +154,39 @@ class Scan extends Page implements HasTable
             $summary[] = Plural::of(count($result->errors), 'error', 'errores');
         }
 
+        $classifyUrl = self::classifyNewUrl($result->new);
+
         Notification::make()
             ->title('Escaneo terminado')
             ->body(implode(' · ', $summary))
             ->success()
+            ->actions($classifyUrl ? [
+                Action::make('classifyNew')->label('Clasificar los nuevos')->button()->url($classifyUrl),
+            ] : [])
             ->send();
+    }
+
+    /**
+     * Clasificar opened on the first of the songs a scan added, or null when it added none (or they
+     * are gone since). The rest of them follow in the «Sin energía» queue.
+     *
+     * @param  list<string>  $paths
+     */
+    public static function classifyNewUrl(array $paths): ?string
+    {
+        if ($paths === []) {
+            return null;
+        }
+
+        $first = Song::query()
+            ->whereIn('path', $paths)
+            ->whereNull('energy')
+            ->orderBy('artist')
+            ->orderBy('title')
+            ->orderBy('id')
+            ->value('id');
+
+        return $first ? Classify::getUrl(['tema' => $first]) : null;
     }
 
     public function table(Table $table): Table
@@ -280,5 +311,11 @@ class Scan extends Page implements HasTable
     private function presentSongs(): Collection
     {
         return $this->presentSongs ??= Song::query()->present()->get(['id', 'path', 'title', 'artist', 'missing']);
+    }
+
+    /** @return list<string> */
+    protected function pickableFolders(): array
+    {
+        return ['data.music_folder'];
     }
 }
