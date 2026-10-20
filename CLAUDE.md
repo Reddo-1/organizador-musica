@@ -1,6 +1,6 @@
 # Organizador de música
 
-La especificación completa está en SPEC.md.
+La especificación completa está en SPEC.md. Estado del trabajo, pendientes y cómo usar Playwright MCP aquí: @ESTADO.md
 
 ## Comandos
 
@@ -17,6 +17,7 @@ La especificación completa está en SPEC.md.
 - Código, clases, tablas y columnas en inglés; textos de la interfaz en español.
 - La lógica va en servicios (`app/Services`), independientes de la UI, que solo los llama. Cada servicio tiene tests Pest; los audios de prueba (1 s, con etiquetas, generados con ffmpeg) van en `tests/Fixtures`.
 - Al terminar cada fase: `php artisan test`, enseñar la salida y hacer un commit descriptivo.
+- Los commits y las PR no llevan `Co-Authored-By: Claude` ni ninguna otra atribución a Claude: el repo es público y Claude no debe aparecer como colaborador.
 - Windows: rutas con `\`, comparaciones sin distinguir mayúsculas, nombres con tildes y ñ (UTF-8). En Composer desde PowerShell, `"~X.Y"` en vez de `^`.
 - No añadir dependencias fuera de la sección 2 de la spec sin preguntar. Si algo es ambiguo o choca con Laravel 13 o Filament 5, preguntar antes de improvisar.
 - La app tiene que poder llevarse a otro PC (Windows con Herd, o WSL) sin tocar código: lo propio de cada PC va en `.env` o en Ajustes, nunca en el código.
