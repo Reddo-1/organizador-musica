@@ -85,6 +85,8 @@ Configuración en `~/.claude.json`, en el proyecto: `"/mnt/c/Program Files/nodej
 
 ## Pendiente
 
-1. **En el PC con la música:** instalar Herd, copiar el proyecto (no hay remoto; `git archive -o organizador-musica.zip HEAD`), `composer setup`, poner `FFMPEG_BINARY` en `.env` con la ruta a su `ffmpeg.exe`, `php artisan music:import-legacy "C:\…\musica.db"`, Escanear y elegir en Ajustes la carpeta de playlists. Luego comprobar que rekordbox importa un `.m3u8`.
+1. **En el PC con la música:** instalar Herd, clonar https://github.com/Reddo-1/organizador-musica, `composer setup`, poner `FFMPEG_BINARY` en `.env` con la ruta a su `ffmpeg.exe`, `php artisan music:import-legacy "C:\…\musica.db"`, Escanear y elegir en Ajustes la carpeta de playlists. Luego comprobar que rekordbox importa un `.m3u8`.
 2. **Skills en el otro PC:** `.claude/skills/` no está en el repo (son de terceros, sin su licencia). Reinstálalas con los dos comandos de SPEC §2; `skills-lock.json` fija sus versiones.
-3. **Ideas futuras de la spec**, sin empezar: importar BPM, key y cues del XML de colección de rekordbox.
+3. **README para el repo público:** el usuario quiere rehacerlo ahora que la app está a punto (qué hace, capturas de la demo y después la instalación).
+4. **GitHub:** repo público https://github.com/Reddo-1/organizador-musica (`gh` en `~/.local/bin`, con sesión de Reddo-1). Se sube solo `main`. La rama local `backup/antes-de-reescribir` guarda el historial de antes de quitar las líneas `Co-Authored-By` y las skills: no la subas nunca.
+5. **Ideas futuras de la spec**, sin empezar: importar BPM, key y cues del XML de colección de rekordbox.
