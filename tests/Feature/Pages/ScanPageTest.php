@@ -77,7 +77,8 @@ it('lists missing songs and relocates one onto the renamed file', function () {
 
     $component
         ->assertCanSeeTableRecords([$song->fresh()])
-        ->callAction(TestAction::make('relocate')->table($song), data: ['target' => $duplicate->id])
+        // The most similar file comes chosen: confirming is enough.
+        ->callAction(TestAction::make('relocate')->table($song))
         ->assertHasNoActionErrors()
         ->assertNotified('Tema reubicado');
 

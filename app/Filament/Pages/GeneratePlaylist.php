@@ -77,7 +77,7 @@ class GeneratePlaylist extends Page
 
     public function mount(): void
     {
-        $this->form->fill(array_replace_recursive($this->defaults(), $this->data ?? []));
+        $this->form->fill($this->withDefaults($this->data ?? []));
     }
 
     public function form(Schema $schema): Schema
@@ -223,10 +223,22 @@ class GeneratePlaylist extends Page
 
         $state = $this->form->getRawState();
 
-        $this->form->fill(array_replace_recursive($this->defaults(), $presets->load($this->preset), [
+        $this->form->fill($this->withDefaults($presets->load($this->preset), [
             'count' => $state['count'] ?? 20,
             'order' => $state['order'] ?? 'random',
         ]));
+    }
+
+    /**
+     * A filter changed by hand: the filters are no longer the loaded preset, so the selector goes
+     * back to empty and choosing that preset loads it again (a select does not fire for the
+     * option it already shows). The number of songs and the order are not part of a preset.
+     */
+    public function updatedData(mixed $value, string $key): void
+    {
+        if (! in_array($key, ['count', 'order'], true)) {
+            $this->preset = null;
+        }
     }
 
     public function savePresetAction(): Action
@@ -310,6 +322,43 @@ class GeneratePlaylist extends Page
             'count' => 20,
             'order' => 'random',
         ];
+    }
+
+    /**
+     * The defaults overlaid with stored filters (session or preset). A stored range is fitted to
+     * the library as it is now: one saved before there was data, or out of the current bounds,
+     * would leave its slider without handles.
+     *
+     * @return array<string, mixed>
+     */
+    private function withDefaults(array ...$layers): array
+    {
+        $defaults = $this->defaults();
+        $state = array_replace_recursive($defaults, ...$layers);
+
+        foreach (SongFilter::RANGES as $field) {
+            $state[$field] = $this->fitRange($state[$field] ?? null, $defaults[$field]);
+        }
+
+        return $state;
+    }
+
+    /**
+     * @param  array{0: float|int, 1: float|int}|null  $bounds
+     * @return array{0: float|int, 1: float|int}|null
+     */
+    private function fitRange(mixed $range, ?array $bounds): ?array
+    {
+        $range = array_values((array) $range);
+
+        if ($bounds === null || count($range) !== 2 || ! is_numeric($range[0]) || ! is_numeric($range[1])) {
+            return $bounds;
+        }
+
+        $low = max(min($range[0], $range[1]), $bounds[0]);
+        $high = min(max($range[0], $range[1]), $bounds[1]);
+
+        return $low <= $high ? [$low, $high] : $bounds;
     }
 
     /** @return list<Fieldset> One include / mode / exclude block per tag category. */

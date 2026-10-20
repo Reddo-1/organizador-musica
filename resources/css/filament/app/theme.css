@@ -203,6 +203,12 @@
     max-width: 100%;
 }
 
+/* Filament's radio label text grows with its content: let a path in the description truncate. */
+.fi-fo-radio-label-text:has(.app-path) {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+}
+
 .app-mono-input {
     font-family: var(--font-mono);
     font-size: 0.8125rem;
@@ -250,6 +256,10 @@
 
 .app-nowrap {
     white-space: nowrap;
+}
+
+.app-empty-action {
+    margin-top: 0.75rem;
 }
 
 .app-empty-line {
@@ -909,6 +919,8 @@ kbd {
 /* The playlist editor. */
 .app-playlist {
     display: grid;
+    /* minmax(0, …): a long saved path must truncate, not widen the panel. */
+    grid-template-columns: minmax(0, 1fr);
     gap: 1rem;
 }
 
@@ -1100,6 +1112,7 @@ kbd {
 
 .app-playlist-foot {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: 0.5rem;
 }
 

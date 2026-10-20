@@ -96,3 +96,16 @@ it('validates the card', function () {
         ->call('save')
         ->assertHasFormErrors(['title' => 'required', 'bpm' => 'max', 'song_year' => 'min']);
 });
+
+it('points to Escanear only when the library is empty', function () {
+    Livewire::test(ListSongs::class)
+        ->assertSee('Aún no hay temas')
+        ->assertSee('Escanear carpeta');
+
+    Song::factory()->create(['artist' => 'Kanine']);
+
+    Livewire::test(ListSongs::class)
+        ->searchTable('nadie')
+        ->assertSee('Ningún tema coincide')
+        ->assertDontSee('Escanear carpeta');
+});

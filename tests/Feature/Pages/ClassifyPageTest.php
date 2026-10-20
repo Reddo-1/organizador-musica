@@ -82,3 +82,12 @@ it('says when nothing is left in the view', function () {
         ->assertSet('songId', null)
         ->assertSee('Todos los temas tienen energía.');
 });
+
+it('points to Escanear when the library is empty, whatever the view', function () {
+    Song::query()->delete();
+
+    Livewire::test(Classify::class)
+        ->assertSee('Aún no hay temas.')
+        ->assertSee('Escanear carpeta')
+        ->assertDontSee('Todos los temas tienen energía.');
+});

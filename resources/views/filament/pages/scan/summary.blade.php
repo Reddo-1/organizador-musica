@@ -49,9 +49,9 @@
                 <ul class="app-list">
                     @foreach ($result->relocated as $move)
                         <li class="app-move">
-                            {!! PathHtml::render($move['from']) !!}
+                            {!! PathHtml::render($move['from'], base: $result->folder) !!}
                             <span class="app-move-arrow" aria-label="pasa a">→</span>
-                            {!! PathHtml::render($move['to']) !!}
+                            {!! PathHtml::render($move['to'], base: $result->folder) !!}
                         </li>
                     @endforeach
                 </ul>
@@ -64,7 +64,7 @@
                 <ul class="app-list">
                     @foreach ($result->errors as $error)
                         <li class="app-error-item">
-                            {!! PathHtml::render($error['path']) !!}
+                            {!! PathHtml::render($error['path'], base: $result->folder) !!}
                             <span class="app-error-message">{{ $error['message'] }}</span>
                         </li>
                     @endforeach
@@ -77,7 +77,7 @@
                 <summary class="app-block-title">{{ count($result->new) }} {{ count($result->new) === 1 ? 'tema nuevo' : 'temas nuevos' }}</summary>
                 <ul class="app-list">
                     @foreach ($result->new as $path)
-                        <li>{!! PathHtml::render($path) !!}</li>
+                        <li>{!! PathHtml::render($path, base: $result->folder) !!}</li>
                     @endforeach
                 </ul>
             </details>

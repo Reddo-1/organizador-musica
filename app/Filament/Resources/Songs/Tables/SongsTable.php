@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Songs\Tables;
 
 use App\Enums\SetRole;
+use App\Filament\Pages\Scan;
 use App\Models\Genre;
 use App\Models\Song;
 use App\Models\Tag;
@@ -11,6 +12,7 @@ use App\Services\TagManager;
 use App\Support\Palette;
 use App\Support\PathHtml;
 use App\Support\Plural;
+use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Forms\Components\Select;
@@ -129,8 +131,19 @@ final class SongsTable
             ->toolbarActions([
                 BulkActionGroup::make(self::bulkActions())->label('Editar los seleccionados'),
             ])
-            ->emptyStateHeading('Aún no hay temas')
-            ->emptyStateDescription('Escanea tu carpeta de música para darlos de alta.')
+            // The same empty table means "scan first" or "nothing matches", depending on the library.
+            ->emptyStateIcon(Heroicon::OutlinedMusicalNote)
+            ->emptyStateHeading(fn (): string => Song::query()->exists() ? 'Ningún tema coincide' : 'Aún no hay temas')
+            ->emptyStateDescription(fn (): string => Song::query()->exists()
+                ? 'Cambia la búsqueda o quita algún filtro.'
+                : 'Escanea tu carpeta de música para darlos de alta.')
+            ->emptyStateActions([
+                Action::make('scan')
+                    ->label('Escanear carpeta')
+                    ->icon(Heroicon::OutlinedFolderOpen)
+                    ->url(fn (): string => Scan::getUrl())
+                    ->visible(fn (): bool => Song::query()->doesntExist()),
+            ])
             ->paginated([25, 50, 100, 'all'])
             ->defaultPaginationPageOption(50);
     }
@@ -256,9 +269,12 @@ final class SongsTable
             ->title(Plural::of($count, 'tema', 'temas').' '.$what)
             ->success()
             ->send();
+        // Says how many songs a bulk edit will change before it is applied.
+        $selected = fn (Collection $records): string => 'Se aplica a '.Plural::of($records->count(), 'tema seleccionado', 'temas seleccionados').'.';
 
         return [
             BulkAction::make('setEnergy')
+                ->modalDescription($selected)
                 ->modalSubmitActionLabel('Aplicar')
                 ->label('Poner energía')
                 ->icon(Heroicon::OutlinedBolt)
@@ -275,6 +291,7 @@ final class SongsTable
                 ->action(fn (Collection $records, array $data, SongEditor $editor) => $done($editor->setEnergy($records->modelKeys(), $data['energy']), 'con la energía cambiada'))
                 ->deselectRecordsAfterCompletion(),
             BulkAction::make('setRole')
+                ->modalDescription($selected)
                 ->modalSubmitActionLabel('Aplicar')
                 ->label('Poner rol')
                 ->icon(Heroicon::OutlinedSquares2x2)
@@ -289,6 +306,7 @@ final class SongsTable
                 ->action(fn (Collection $records, array $data, SongEditor $editor) => $done($editor->setRole($records->modelKeys(), $data['set_role'] ?? null), 'con el rol cambiado'))
                 ->deselectRecordsAfterCompletion(),
             BulkAction::make('setGenre')
+                ->modalDescription($selected)
                 ->modalSubmitActionLabel('Aplicar')
                 ->label('Poner género')
                 ->icon(Heroicon::OutlinedRectangleGroup)
@@ -305,6 +323,7 @@ final class SongsTable
                 ->action(fn (Collection $records, array $data, SongEditor $editor) => $done($editor->setGenre($records->modelKeys(), filled($data['genre_id'] ?? null) ? (int) $data['genre_id'] : null), 'con el género cambiado'))
                 ->deselectRecordsAfterCompletion(),
             BulkAction::make('addTags')
+                ->modalDescription($selected)
                 ->modalSubmitActionLabel('Aplicar')
                 ->label('Añadir etiquetas')
                 ->icon(Heroicon::OutlinedTag)
@@ -326,6 +345,7 @@ final class SongsTable
                 ->action(fn (Collection $records, array $data, SongEditor $editor) => $done($editor->addTags($records->modelKeys(), $data['category'], $data['names']), 'con etiquetas añadidas'))
                 ->deselectRecordsAfterCompletion(),
             BulkAction::make('removeTags')
+                ->modalDescription($selected)
                 ->modalSubmitActionLabel('Aplicar')
                 ->label('Quitar etiquetas')
                 ->icon(Heroicon::OutlinedMinusCircle)
@@ -354,7 +374,7 @@ final class SongsTable
                 ->icon(Heroicon::OutlinedTrash)
                 ->color('danger')
                 ->requiresConfirmation()
-                ->modalHeading('¿Quitar los temas seleccionados de la app?')
+                ->modalHeading(fn (Collection $records): string => '¿Quitar '.Plural::of($records->count(), 'tema', 'temas').' de la app?')
                 ->modalDescription('Se borran los temas y su clasificación de la base de datos. Los archivos no se tocan.')
                 ->modalSubmitActionLabel('Quitar')
                 ->action(fn (Collection $records, SongEditor $editor) => $done($editor->remove($records->modelKeys()), 'quitados de la app'))

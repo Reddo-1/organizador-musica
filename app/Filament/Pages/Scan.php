@@ -168,7 +168,7 @@ class Scan extends Page implements HasTable
                 TextColumn::make('title')
                     ->label('Tema')
                     ->formatStateUsing(fn (Song $record): string => $record->displayName())
-                    ->description(fn (Song $record): HtmlString => PathHtml::render($record->path, 'app-path-cell'))
+                    ->description(fn (Song $record): HtmlString => PathHtml::render($record->path, 'app-path-cell', app(Settings::class)->musicFolder()))
                     ->searchable(['title', 'artist', 'path'])
                     ->sortable(['artist', 'title'])
                     ->wrap(),
@@ -176,7 +176,7 @@ class Scan extends Page implements HasTable
                     ->label('Archivo más parecido')
                     ->state(fn (Song $record): ?string => $this->bestMatch($record)['label'] ?? null)
                     ->description(fn (Song $record): ?HtmlString => isset($this->bestMatch($record)['song'])
-                        ? PathHtml::render($this->bestMatch($record)['song']->path, 'app-path-cell')
+                        ? PathHtml::render($this->bestMatch($record)['song']->path, 'app-path-cell', app(Settings::class)->musicFolder())
                         : null)
                     ->placeholder('Ningún tema presente')
                     ->wrap()
@@ -193,6 +193,7 @@ class Scan extends Page implements HasTable
                     ->modalDescription('Elige el archivo nuevo de este tema. El tema conserva su clasificación, toma las etiquetas del elegido y ese duplicado desaparece de la biblioteca.')
                     ->modalSubmitActionLabel('Reubicar')
                     ->modalWidth('3xl')
+                    ->fillForm(fn (Song $record): array => ['target' => array_key_first($this->suggestionOptions($record))])
                     ->schema(fn (Song $record): array => [
                         Radio::make('target')
                             ->label('Temas presentes con el nombre de archivo más parecido')
@@ -271,7 +272,7 @@ class Scan extends Page implements HasTable
     private function suggestionDescriptions(Song $missing): array
     {
         return app(SongRelocator::class)->suggestions($missing, 8, $this->presentSongs())
-            ->mapWithKeys(fn (array $item): array => [$item['song']->id => PathHtml::render($item['song']->path, 'app-path-block')])
+            ->mapWithKeys(fn (array $item): array => [$item['song']->id => PathHtml::render($item['song']->path, 'app-path-block', app(Settings::class)->musicFolder())])
             ->all();
     }
 
